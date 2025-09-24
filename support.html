@@ -1,88 +1,282 @@
 import { useState } from "react";
-<SectionTitle kicker="SSS" title="Sıkça Sorulan Sorular" />
-<div className="grid gap-6 sm:grid-cols-2">
-<Faq q="Uygulama offline çalışır mı?" a="Evet. Sınav çözme ve içerik görüntüleme modülleri internet olmadan kullanılabilir; bağlantı geldiğinde veriler senkronlanır." />
-<Faq q="Okul kurulumunu nasıl yapacağız?" a="Okul ve branş öğretmenlerini panele ekleyip sınıfları oluşturmanız yeterli. Veli uygulamasıyla eşleştirme yapılır." />
-<Faq q="Verilerimiz güvende mi?" a="Kimlik doğrulama, yetkilendirme ve veritabanı kuralları Firebase üzerinde güvenli şekilde yapılandırılmıştır." />
-<Faq q="Kendi logomuzu kullanabilir miyiz?" a="Evet. Kurumsal kurulumlarda okul/kurum logonuzla özelleştirme yapılabilir." />
-</div>
-</Container>
-</section>
+import { motion } from "framer-motion";
+import { CheckCircle2, School, Users, Map, Clock, Shield, Download, PlayCircle, Github, Mail } from "lucide-react";
 
-
-{/* Support */}
-<section id="support" className="bg-white py-16 sm:py-24">
-<Container>
-<SectionTitle kicker="Destek" title="Yardıma mı ihtiyacınız var?" subtitle="Herhangi bir sorunuzda bizimle iletişime geçebilirsiniz." />
-<div className="flex flex-col items-center gap-4 text-center">
-<Mail className="h-10 w-10 text-gray-700" />
-<p className="text-lg font-medium">📧 dersyolumdestek@gmail.com</p>
-<p className="text-sm text-gray-600">Sorularınızı bize e-posta yoluyla iletebilirsiniz. En kısa sürede yanıt vereceğiz.</p>
-</div>
-</Container>
-</section>
-
-
-{/* Footer */}
-<footer className="border-t border-gray-200 bg-gray-50 py-10 text-sm">
-<Container>
-<div className="flex flex-col items-center justify-between gap-4 sm:flex-row">
-<p>© {new Date().getFullYear()} Ders Yolum • Tüm hakları saklıdır.</p>
-<div className="flex items-center gap-4">
-<a href="#" className="hover:underline">Gizlilik</a>
-<a href="#" className="hover:underline">Kullanım Şartları</a>
-<a href="https://github.com/azizturhan/dersyolum-site" className="inline-flex items-center gap-1 hover:underline"><Github className="h-4 w-4" /> GitHub</a>
-</div>
-</div>
-</Container>
-</footer>
-</div>
-);
+// -------- Helpers (GH Pages-safe asset paths + tiny dev tests) --------
+function withBase(path: string) {
+  const base = (import.meta as any)?.env?.BASE_URL || "/";
+  return base + path.replace(/^\//, "");
 }
 
+export function getScreenUrl(i: number) {
+  if (!Number.isInteger(i) || i < 1 || i > 12) {
+    throw new Error("getScreenUrl: i must be an integer between 1 and 12");
+  }
+  return withBase(`screens/screen-${i}.png`);
+}
+
+// Basic dev tests
+if (typeof window !== "undefined" && (import.meta as any)?.env?.DEV) {
+  try {
+    console.assert(getScreenUrl(1).endsWith("/screens/screen-1.png"));
+    console.assert(getScreenUrl(6).endsWith("/screens/screen-6.png"));
+  } catch (e) {
+    console.error("Test failed", e);
+  }
+}
+
+const Container = ({ children }: { children: React.ReactNode }) => (
+  <div className="mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-8">{children}</div>
+);
+
+const Badge = ({ children }: { children: React.ReactNode }) => (
+  <span className="inline-flex items-center rounded-full border border-gray-200 bg-white/70 px-3 py-1 text-xs font-medium backdrop-blur">
+    {children}
+  </span>
+);
+
+const Button = ({ children, href }: { children: React.ReactNode; href?: string }) => (
+  <a
+    href={href || "#"}
+    className="inline-flex items-center gap-2 rounded-2xl border border-transparent bg-black px-5 py-3 text-white shadow-md transition hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-black/30"
+  >
+    {children}
+  </a>
+);
+
+const GhostButton = ({ children, href }: { children: React.ReactNode; href?: string }) => (
+  <a
+    href={href || "#"}
+    className="inline-flex items-center gap-2 rounded-2xl border border-gray-300 bg-white px-5 py-3 text-gray-900 shadow-sm transition hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-black/10"
+  >
+    {children}
+  </a>
+);
+
+const SectionTitle = ({ kicker, title, subtitle }: { kicker?: string; title: string; subtitle?: string }) => (
+  <div className="mb-10 text-center">
+    {kicker && <div className="mb-3 text-sm font-semibold uppercase tracking-widest text-gray-500">{kicker}</div>}
+    <h2 className="text-3xl font-bold leading-tight sm:text-4xl">{title}</h2>
+    {subtitle && <p className="mx-auto mt-3 max-w-2xl text-gray-600">{subtitle}</p>}
+  </div>
+);
+
+export default function DersYolumLanding() {
+  const [playing, setPlaying] = useState(false);
+
+  return (
+    <div className="min-h-screen bg-gradient-to-b from-white to-gray-50 text-gray-900">
+      {/* Nav */}
+      <header className="sticky top-0 z-40 border-b border-gray-100 bg-white/70 backdrop-blur">
+        <Container>
+          <div className="flex h-16 items-center justify-between">
+            <a href="#" className="flex items-center gap-2 font-bold">
+              <div className="grid h-8 w-8 place-items-center rounded-xl bg-black text-white">DY</div>
+              <span>Ders Yolum</span>
+            </a>
+            <nav className="hidden items-center gap-6 text-sm font-medium md:flex">
+              <a href="#features" className="hover:text-black">Özellikler</a>
+              <a href="#screens" className="hover:text-black">Ekran Görüntüleri</a>
+              <a href="#faq" className="hover:text-black">SSS</a>
+              <a href={withBase('support.html')} className="hover:text-black">Destek</a>
+            </nav>
+            <div className="flex items-center gap-3">
+              <GhostButton href="https://github.com/azizturhan/dersyolum-site">
+                <Github className="h-4 w-4" /> Kaynak Kodu
+              </GhostButton>
+              <Button href="#download">
+                <Download className="h-4 w-4" /> İndir
+              </Button>
+            </div>
+          </div>
+        </Container>
+      </header>
+
+      {/* Hero */}
+      <section className="relative overflow-hidden pb-16 pt-16 sm:pb-24 sm:pt-24">
+        <Container>
+          <div className="grid items-center gap-10 md:grid-cols-2">
+            <div>
+              <div className="mb-4 flex items-center gap-2">
+                <Badge>Öğretmen odaklı</Badge>
+                <Badge>Offline çalışma</Badge>
+                <Badge>Firebase destekli</Badge>
+              </div>
+              <h1 className="text-4xl font-extrabold tracking-tight sm:text-5xl">
+                Öğretmen, öğrenci ve veli için <span className="underline decoration-black/20">akıllı</span> öğrenme deneyimi
+              </h1>
+              <p className="mt-4 max-w-xl text-lg text-gray-600">
+                Ders Yolum; kazanım takibi, ödev ve sınav yönetimi, offline çözümler ve anlık bildirimlerle okul iletişimini tek bir uygulamada toplar.
+              </p>
+              <div className="mt-8 flex flex-wrap items-center gap-3">
+                <Button href="#download"><Download className="h-4 w-4" /> Hemen İndir</Button>
+                <GhostButton href="#features"><CheckCircle2 className="h-4 w-4" /> Özelliklere Bak</GhostButton>
+              </div>
+              <p className="mt-3 text-xs text-gray-500">iOS ve Android destekli • Reklamsız eğitim modu • Türkçe</p>
+            </div>
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6 }}
+              className="relative"
+            >
+              <div className="relative rounded-2xl border border-gray-200 bg-white p-2 shadow-xl">
+                <div className="aspect-[9/16] w-full overflow-hidden rounded-xl bg-gray-100">
+                  {!playing ? (
+                    <button
+                      onClick={() => setPlaying(true)}
+                      className="grid h-full w-full place-items-center"
+                      aria-label="Tanıtım videosu oynat"
+                    >
+                      <div className="flex flex-col items-center">
+                        <PlayCircle className="h-16 w-16" />
+                        <span className="mt-2 text-sm text-gray-600">Tanıtım videosu</span>
+                      </div>
+                    </button>
+                  ) : (
+                    <video className="h-full w-full object-cover" controls autoPlay playsInline>
+                      <source src={withBase("promo.mp4")} type="video/mp4" />
+                    </video>
+                  )}
+                </div>
+              </div>
+            </motion.div>
+          </div>
+        </Container>
+      </section>
+
+      {/* Features */}
+      <section id="features" className="py-16 sm:py-24">
+        <Container>
+          <SectionTitle
+            kicker="Özellikler"
+            title="Ders Yolum ile neler yapabilirsiniz?"
+            subtitle="Okul ekosistemindeki her role uygun güçlü modüller."
+          />
+          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            <Feature icon={<School className="h-5 w-5" />} title="Kazanım Takibi" desc="Haftalara bölünmüş kazanım görünümü ile planlı ilerleyin." />
+            <Feature icon={<Users className="h-5 w-5" />} title="Sınıf & Veli İletişimi" desc="Duyurular, ödevler ve sohbet ile anında bilgilendirme." />
+            <Feature icon={<Clock className="h-5 w-5" />} title="Offline Sınav Çözme" desc="Soruları indirip internet olmadan çözün, sonra senkronlayın." />
+            <Feature icon={<Map className="h-5 w-5" />} title="Servis Takibi (opsiyonel)" desc="Öğrenci/personel servis takibi ve yoklama entegrasyonu." />
+            <Feature icon={<Shield className="h-5 w-5" />} title="Güvenli Altyapı" desc="Firebase kimlik doğrulama, bildirim ve Remote Config desteği." />
+            <Feature icon={<CheckCircle2 className="h-5 w-5" />} title="Kolay Kurulum" desc="Okul, öğretmen ve sınıf kurulumlarını dakikalar içinde tamamlayın." />
+          </div>
+        </Container>
+      </section>
+
+      {/* Screenshots */}
+      <section id="screens" className="bg-white py-16 sm:py-24">
+        <Container>
+          <SectionTitle title="Ekran Görüntüleri" subtitle="Mağaza ve sosyal medya için yüksek kaliteli görseller." />
+          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {[1,2,3,4,5,6].map((i) => (
+              <div key={i} className="overflow-hidden rounded-2xl border border-gray-200 bg-gray-50 shadow-sm">
+                <div
+                  className="aspect-[9/16] bg-cover bg-center"
+                  style={{ backgroundImage: `url(${getScreenUrl(i)})` }}
+                  data-testid={`screen-${i}`}
+                />
+              </div>
+            ))}
+          </div>
+        </Container>
+      </section>
+
+      {/* Download */}
+      <section id="download" className="py-16 sm:py-24">
+        <Container>
+          <SectionTitle title="İndir & Başla" subtitle="Ders Yolum ücretsizdir. Okulunuz için kurulum ve destek talep edebilirsiniz." />
+          <div className="flex flex-wrap items-center justify-center gap-4">
+            <StoreBadge platform="Google Play" href="#" />
+            <StoreBadge platform="App Store" href="#" />
+          </div>
+          <p className="mt-4 text-center text-sm text-gray-500">Kurumsal kurulum için iletişim: <a className="underline" href="mailto:info@dersyolum.app">info@dersyolum.app</a></p>
+        </Container>
+      </section>
+
+      {/* FAQ */}
+      <section id="faq" className="bg-white py-16 sm:py-24">
+        <Container>
+          <SectionTitle kicker="SSS" title="Sıkça Sorulan Sorular" />
+          <div className="grid gap-6 sm:grid-cols-2">
+            <Faq q="Uygulama offline çalışır mı?" a="Evet. Sınav çözme ve içerik görüntüleme modülleri internet olmadan kullanılabilir; bağlantı geldiğinde veriler senkronlanır." />
+            <Faq q="Okul kurulumunu nasıl yapacağız?" a="Okul ve branş öğretmenlerini panele ekleyip sınıfları oluşturmanız yeterli. Veli uygulamasıyla eşleştirme yapılır." />
+            <Faq q="Verilerimiz güvende mi?" a="Kimlik doğrulama, yetkilendirme ve veritabanı kuralları Firebase üzerinde güvenli şekilde yapılandırılmıştır." />
+            <Faq q="Kendi logomuzu kullanabilir miyiz?" a="Evet. Kurumsal kurulumlarda okul/kurum logonuzla özelleştirme yapılabilir." />
+          </div>
+        </Container>
+      </section>
+
+      {/* Support */}
+      <section id="support" className="bg-white py-16 sm:py-24">
+        <Container>
+          <SectionTitle kicker="Destek" title="Yardıma mı ihtiyacınız var?" subtitle="Herhangi bir sorunuzda bizimle iletişime geçebilirsiniz." />
+          <div className="flex flex-col items-center gap-4 text-center">
+            <Mail className="h-10 w-10 text-gray-700" />
+            <p className="text-lg font-medium">📧 dersyolumdestek@gmail.com</p>
+            <p className="text-sm text-gray-600">Sorularınızı bize e-posta yoluyla iletebilirsiniz. En kısa sürede yanıt vereceğiz.</p>
+          </div>
+        </Container>
+      </section>
+
+      {/* Footer */}
+      <footer className="border-t border-gray-200 bg-gray-50 py-10 text-sm">
+        <Container>
+          <div className="flex flex-col items-center justify-between gap-4 sm:flex-row">
+            <p>© {new Date().getFullYear()} Ders Yolum • Tüm hakları saklıdır.</p>
+            <div className="flex items-center gap-4">
+              <a href="#" className="hover:underline">Gizlilik</a>
+              <a href="#" className="hover:underline">Kullanım Şartları</a>
+              <a href="https://github.com/azizturhan/dersyolum-site" className="inline-flex items-center gap-1 hover:underline"><Github className="h-4 w-4" /> GitHub</a>
+            </div>
+          </div>
+        </Container>
+      </footer>
+    </div>
+  );
+}
 
 function Feature({ icon, title, desc }: { icon: React.ReactNode; title: string; desc: string }) {
-return (
-<motion.div
-initial={{ opacity: 0, y: 16 }}
-whileInView={{ opacity: 1, y: 0 }}
-viewport={{ once: true }}
-transition={{ duration: 0.4 }}
-className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm"
->
-<div className="mb-3 inline-flex h-10 w-10 items-center justify-center rounded-xl border border-gray-200 bg-gray-50">
-{icon}
-</div>
-<h3 className="text-lg font-semibold">{title}</h3>
-<p className="mt-1 text-gray-600">{desc}</p>
-</motion.div>
-);
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 16 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true }}
+      transition={{ duration: 0.4 }}
+      className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm"
+    >
+      <div className="mb-3 inline-flex h-10 w-10 items-center justify-center rounded-xl border border-gray-200 bg-gray-50">
+        {icon}
+      </div>
+      <h3 className="text-lg font-semibold">{title}</h3>
+      <p className="mt-1 text-gray-600">{desc}</p>
+    </motion.div>
+  );
 }
-
 
 function Faq({ q, a }: { q: string; a: string }) {
-return (
-<div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
-<h4 className="font-semibold">{q}</h4>
-<p className="mt-2 text-gray-600">{a}</p>
-</div>
-);
+  return (
+    <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
+      <h4 className="font-semibold">{q}</h4>
+      <p className="mt-2 text-gray-600">{a}</p>
+    </div>
+  );
 }
 
-
 function StoreBadge({ platform, href }: { platform: string; href: string }) {
-const imgSrc = platform === "Google Play" ? withBase("badges/google-play.svg") : withBase("badges/app-store.svg");
-return (
-<a href={href} className="inline-flex items-center gap-3 rounded-xl border border-gray-200 bg-white px-4 py-3 shadow-sm hover:bg-gray-50">
-<img
-src={imgSrc}
-alt={`${platform} badge`}
-className="h-8 w-auto"
-/>
-<div className="text-left">
-<div className="text-[10px] leading-3 text-gray-500">Şuradan edinin</div>
-<div className="-mt-0.5 text-sm font-semibold">{platform}</div>
-</div>
-</a>
-);
+  const imgSrc = platform === "Google Play" ? withBase("badges/google-play.svg") : withBase("badges/app-store.svg");
+  return (
+    <a href={href} className="inline-flex items-center gap-3 rounded-xl border border-gray-200 bg-white px-4 py-3 shadow-sm hover:bg-gray-50">
+      <img
+        src={imgSrc}
+        alt={`${platform} badge`}
+        className="h-8 w-auto"
+      />
+      <div className="text-left">
+        <div className="text-[10px] leading-3 text-gray-500">Şuradan edinin</div>
+        <div className="-mt-0.5 text-sm font-semibold">{platform}</div>
+      </div>
+    </a>
+  );
 }
