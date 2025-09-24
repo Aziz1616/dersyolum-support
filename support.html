@@ -1,13 +1,88 @@
-<!DOCTYPE html>
-<html lang="tr">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>DersYolum Öğretmen – Destek</title>
-</head>
-<body style="font-family: Arial, sans-serif; padding: 2rem;">
-  <h1>Destek</h1>
-  <p>Bu uygulama ile ilgili herhangi bir sorunuz varsa aşağıdaki e-posta adresinden bizimle iletişime geçebilirsiniz:</p>
-  <p><strong>📧 dersyolumdestek@gmail.com</strong></p>
-</body>
-</html>
+import { useState } from "react";
+<SectionTitle kicker="SSS" title="Sıkça Sorulan Sorular" />
+<div className="grid gap-6 sm:grid-cols-2">
+<Faq q="Uygulama offline çalışır mı?" a="Evet. Sınav çözme ve içerik görüntüleme modülleri internet olmadan kullanılabilir; bağlantı geldiğinde veriler senkronlanır." />
+<Faq q="Okul kurulumunu nasıl yapacağız?" a="Okul ve branş öğretmenlerini panele ekleyip sınıfları oluşturmanız yeterli. Veli uygulamasıyla eşleştirme yapılır." />
+<Faq q="Verilerimiz güvende mi?" a="Kimlik doğrulama, yetkilendirme ve veritabanı kuralları Firebase üzerinde güvenli şekilde yapılandırılmıştır." />
+<Faq q="Kendi logomuzu kullanabilir miyiz?" a="Evet. Kurumsal kurulumlarda okul/kurum logonuzla özelleştirme yapılabilir." />
+</div>
+</Container>
+</section>
+
+
+{/* Support */}
+<section id="support" className="bg-white py-16 sm:py-24">
+<Container>
+<SectionTitle kicker="Destek" title="Yardıma mı ihtiyacınız var?" subtitle="Herhangi bir sorunuzda bizimle iletişime geçebilirsiniz." />
+<div className="flex flex-col items-center gap-4 text-center">
+<Mail className="h-10 w-10 text-gray-700" />
+<p className="text-lg font-medium">📧 dersyolumdestek@gmail.com</p>
+<p className="text-sm text-gray-600">Sorularınızı bize e-posta yoluyla iletebilirsiniz. En kısa sürede yanıt vereceğiz.</p>
+</div>
+</Container>
+</section>
+
+
+{/* Footer */}
+<footer className="border-t border-gray-200 bg-gray-50 py-10 text-sm">
+<Container>
+<div className="flex flex-col items-center justify-between gap-4 sm:flex-row">
+<p>© {new Date().getFullYear()} Ders Yolum • Tüm hakları saklıdır.</p>
+<div className="flex items-center gap-4">
+<a href="#" className="hover:underline">Gizlilik</a>
+<a href="#" className="hover:underline">Kullanım Şartları</a>
+<a href="https://github.com/azizturhan/dersyolum-site" className="inline-flex items-center gap-1 hover:underline"><Github className="h-4 w-4" /> GitHub</a>
+</div>
+</div>
+</Container>
+</footer>
+</div>
+);
+}
+
+
+function Feature({ icon, title, desc }: { icon: React.ReactNode; title: string; desc: string }) {
+return (
+<motion.div
+initial={{ opacity: 0, y: 16 }}
+whileInView={{ opacity: 1, y: 0 }}
+viewport={{ once: true }}
+transition={{ duration: 0.4 }}
+className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm"
+>
+<div className="mb-3 inline-flex h-10 w-10 items-center justify-center rounded-xl border border-gray-200 bg-gray-50">
+{icon}
+</div>
+<h3 className="text-lg font-semibold">{title}</h3>
+<p className="mt-1 text-gray-600">{desc}</p>
+</motion.div>
+);
+}
+
+
+function Faq({ q, a }: { q: string; a: string }) {
+return (
+<div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
+<h4 className="font-semibold">{q}</h4>
+<p className="mt-2 text-gray-600">{a}</p>
+</div>
+);
+}
+
+
+function StoreBadge({ platform, href }: { platform: string; href: string }) {
+const imgSrc = platform === "Google Play" ? withBase("badges/google-play.svg") : withBase("badges/app-store.svg");
+return (
+<a href={href} className="inline-flex items-center gap-3 rounded-xl border border-gray-200 bg-white px-4 py-3 shadow-sm hover:bg-gray-50">
+<img
+src={imgSrc}
+alt={`${platform} badge`}
+className="h-8 w-auto"
+/>
+<div className="text-left">
+<div className="text-[10px] leading-3 text-gray-500">Şuradan edinin</div>
+<div className="-mt-0.5 text-sm font-semibold">{platform}</div>
+</div>
+</a>
+);
+}
